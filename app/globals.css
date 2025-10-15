@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light theme tokens */
+:root {
+  --bg: 247 247 248;   /* slate-50 */
+  --fg: 15 23 42;      /* slate-900 */
+  --muted: 100 116 139;/* slate-500 */
+  --ring: 99 102 241;  /* indigo-500 */
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+/* Components */
+@layer components {
+  .container-page {
+    @apply max-w-6xl mx-auto px-4 md:px-6 lg:px-8;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200;
+  }
+  .card-header {
+    @apply px-5 pt-5 pb-3 flex items-center justify-between;
+  }
+  .card-body {
+    @apply px-5 pb-5 space-y-3;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition;
+  }
+  .btn-primary {
+    @apply bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply border border-slate-300 hover:bg-slate-50;
+  }
+  .input {
+    @apply w-full rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+  }
+  .textarea {
+    @apply input h-64 p-3 font-mono text-sm;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-lg px-2 py-0.5 text-xs font-medium border;
+  }
+  .badge-muted {
+    @apply border-slate-300 text-slate-600 bg-slate-50;
+  }
+  .badge-info {
+    @apply border-indigo-200 text-indigo-700 bg-indigo-50;
+  }
+  .kbd {
+    @apply inline-flex items-center rounded-md border border-slate-300 bg-slate-50 px-1.5 py-0.5 text-xs font-mono text-slate-700;
+  }
+}
+
+/* Simple gradient heading */
+.gradient-title {
+  background: linear-gradient(90deg, #0ea5e9 0%, #6366f1 50%, #9333ea 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
