@@ -9,7 +9,7 @@ type Policy = {
 };
 
 const DEFAULT_POLICY: Policy = {
-  mode: "delete",
+  mode: "mask",
   entities: [
     "PERSON",
     "EMAIL_ADDRESS",
@@ -42,7 +42,7 @@ const DEFAULT_POLICY: Policy = {
 
 export default function Page() {
   const [raw, setRaw] = useState(
-    "Lames Eclar (Patient ID 69120232) was seen on 01/23/2024. Email lemon@lemonade.com. He was diagnosed with Jaundice and was given Tylenol to treat his disease. Lames complained about loosing his social security (0098-07-065)."
+    "Lames Eclar (Patient ID 69120232) was seen on 01/23/2024. Email lemon@lemonade.com. He was diagnosed with Jaundice and was given Tylenol to treat his disease. Lames complained about loosing his social security (437-02-2223)."
   );
   const [mode, setMode] = useState<"delete" | "mask">(DEFAULT_POLICY.mode);
   const [out, setOut] = useState("");
