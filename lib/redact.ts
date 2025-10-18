@@ -14,6 +14,8 @@ export const DEFAULT_ENTITIES: EntityType[] = [
   "POSTAL_CODE",
   "LOCATION",
   "MEDICAL_RECORD_NUMBER",
+  "ACCOUNT_ID",   // <-- add if desired
+  "GENERIC_ID",   // <-- add if desired
 ];
 
 export const DEFAULT_MASK: Partial<Record<EntityType, string>> = {
@@ -29,7 +31,10 @@ export const DEFAULT_MASK: Partial<Record<EntityType, string>> = {
   POSTAL_CODE: "[ZIP]",
   LOCATION: "[LOCATION]",
   MEDICAL_RECORD_NUMBER: "[MRN]",
+  ACCOUNT_ID: "[ACCOUNT]",   // <-- add
+  GENERIC_ID: "[ID]",        // <-- add
 };
+
 
 export type RedactResult = {
   redacted_text: string;
