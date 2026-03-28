@@ -1,0 +1,22 @@
+{
+  "schema_version": "v1",
+  "name": "PII Redactor",
+  "description": "A HIPAA-compliant API that detects and redacts Personally Identifiable Information (PII) and Protected Health Information (PHI) from text. Supports masking and deletion modes for 12+ entity types including names, emails, phone numbers, SSNs, credit cards, dates, IP addresses, URLs, addresses, postal codes, locations, and medical record numbers.",
+  "url": "https://pii.aranish.uk",
+  "api": {
+    "type": "openapi",
+    "url": "https://pii.aranish.uk/openapi.yaml"
+  },
+  "auth": {
+    "type": "none"
+  },
+  "endpoints": {
+    "redact": {
+      "url": "https://pii.aranish.uk/api/redact",
+      "method": "POST",
+      "description": "Redact PII/PHI from text input"
+    }
+  },
+  "contact_email": "support@aranish.uk",
+  "legal_info_url": "https://pii.aranish.uk"
+}

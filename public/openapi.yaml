@@ -1,0 +1,124 @@
+openapi: 3.1.0
+info:
+  title: PII Redactor API
+  description: |
+    HIPAA-compliant API for detecting and redacting Personally Identifiable Information (PII)
+    and Protected Health Information (PHI) from text. All processing is done server-side with
+    no data persistence — text is processed and discarded.
+  version: 1.0.0
+  contact:
+    url: https://pii.aranish.uk
+
+servers:
+  - url: https://pii.aranish.uk
+    description: Production
+
+paths:
+  /api/redact:
+    post:
+      operationId: redactText
+      summary: Redact PII/PHI from text
+      description: |
+        Accepts raw text and returns redacted output with detected entities.
+        Supports two modes:
+        - **mask**: Replaces PII with tokens like [NAME], [EMAIL], [SSN], etc.
+        - **delete**: Removes PII spans entirely from the text.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  minLength: 1
+                  description: The raw text containing PII/PHI to redact.
+                  example: "John Smith (Patient ID 12345) was seen on 01/23/2024. Email john@example.com. SSN 437-02-2223."
+                policy:
+                  type: object
+                  description: Redaction policy configuration.
+                  properties:
+                    mode:
+                      type: string
+                      enum: [delete, mask]
+                      default: mask
+                      description: |
+                        - `mask`: Replace PII with bracketed tokens (e.g., [NAME], [EMAIL])
+                        - `delete`: Remove PII spans entirely
+                    entities:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                          - PERSON
+                          - EMAIL_ADDRESS
+                          - PHONE_NUMBER
+                          - US_SSN
+                          - CREDIT_CARD
+                          - DATE_TIME
+                          - IP_ADDRESS
+                          - URL
+                          - ADDRESS
+                          - POSTAL_CODE
+                          - LOCATION
+                          - MEDICAL_RECORD_NUMBER
+                      description: Entity types to redact. Defaults to all types if omitted.
+                    mask_map:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      description: Custom mask tokens per entity type. Defaults provided for all types.
+                      example:
+                        PERSON: "[NAME]"
+                        EMAIL_ADDRESS: "[EMAIL]"
+                        US_SSN: "[SSN]"
+                return_entities:
+                  type: boolean
+                  default: true
+                  description: Whether to include detected entity details in the response.
+      responses:
+        "200":
+          description: Redacted text with optional entity details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redacted_text:
+                    type: string
+                    description: The text with PII redacted according to the policy.
+                    example: "[NAME] (Patient ID [MRN]) was seen on [DATE]. Email [EMAIL]. SSN [SSN]."
+                  entities:
+                    type: array
+                    description: Detected PII entities (only if return_entities is true).
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Entity type (e.g., PERSON, EMAIL_ADDRESS).
+                        text:
+                          type: string
+                          description: The original PII text that was redacted.
+                        start:
+                          type: integer
+                          description: Start index in original text.
+                        end:
+                          type: integer
+                          description: End index in original text.
+                  policy:
+                    type: object
+                    description: The resolved policy used for redaction.
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
