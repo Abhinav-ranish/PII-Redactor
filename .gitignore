@@ -54,3 +54,6 @@ logs/
 # Tooling & hosts
 .vercel/
 .netlify/
+/.agents
+skills-lock.json
+/.claude
