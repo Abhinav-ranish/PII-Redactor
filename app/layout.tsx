@@ -3,10 +3,30 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PII Redactor (Next.js)",
+  title: "PII Redactor — HIPAA-Compliant PII/PHI Redaction",
   description:
-    "Delete or mask PII/PHI locally before sending to external LLMs.",
+    "Delete or mask PII/PHI locally before sending to external LLMs. Supports 12+ entity types including names, emails, SSNs, phone numbers, and medical record numbers.",
   icons: { icon: "/favicon.png" },
+  metadataBase: new URL("https://pii.aranish.uk"),
+  openGraph: {
+    title: "PII Redactor — HIPAA-Compliant PII/PHI Redaction",
+    description:
+      "Delete or mask PII/PHI locally before sending to external LLMs. Supports 12+ entity types including names, emails, SSNs, phone numbers, and medical record numbers.",
+    url: "https://pii.aranish.uk",
+    siteName: "PII Redactor",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PII Redactor — HIPAA-Compliant PII/PHI Redaction",
+    description:
+      "Delete or mask PII/PHI locally before sending to external LLMs. Supports 12+ entity types.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const inter = Inter({ subsets: ["latin"] });

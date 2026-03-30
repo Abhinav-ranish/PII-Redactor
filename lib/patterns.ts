@@ -19,12 +19,12 @@ export const PATTERNS: { type: EntityType; re: RegExp; score: number }[] = [
   { type: "POSTAL_CODE",   re: /\b\d{5}(?:-\d{4})?\b/g, score: 0.5 },
   {
     type: "ADDRESS",
-    re: /\b\d{1,5}\s+[A-Za-z0-9'.#-]+\s+(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Ln|Lane|Dr|Drive|Ct|Court)\b/gi,
+    re: /\b\d{1,5}\s+(?:(?:N(?:orth)?|S(?:outh)?|E(?:ast)?|W(?:est)?|NE|NW|SE|SW)\.?\s+)?[A-Za-z0-9'.#-]+(?:\s+[A-Za-z0-9'.#-]+)*\s+(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Ln|Lane|Dr|Drive|Ct|Court|Way|Pkwy|Parkway|Terrace|Ter|Place|Pl|Circle|Cir|Trail|Trl|Loop|Run|Path|Pike)\b/gi,
     score: 0.5
   },
   {
     type: "LOCATION",
-    re: /\b(Phoenix|Tempe|Scottsdale|Arizona|AZ|California|CA|New\s?York|NY|Texas|TX)\b/gi,
+    re: /\b(?:Phoenix|Tempe|Scottsdale|Mesa|Chandler|Gilbert|Glendale|Tucson|Flagstaff|Sedona|Arizona|AZ|California|CA|New\s?York|NY|Texas|TX|Florida|FL|Illinois|IL|Ohio|OH|Georgia|GA|Pennsylvania|PA|Michigan|MI|Virginia|VA|Washington|WA|Colorado|CO|Massachusetts|MA|Maryland|MD|Minnesota|MN|Oregon|OR|Nevada|NV|New\s?Jersey|NJ|Connecticut|CT|North\s?Carolina|NC|South\s?Carolina|SC|Tennessee|TN|Indiana|IN|Missouri|MO|Wisconsin|WI|Alabama|AL|Louisiana|LA|Kentucky|KY|Oklahoma|OK|Utah|UT|Iowa|IA|Kansas|KS|Mississippi|MS|Arkansas|AR|Nebraska|NE|Idaho|Montana|MT|Delaware|DE|Alaska|AK|Wyoming|WY|Vermont|VT|Rhode\s?Island|RI|New\s?Hampshire|NH|New\s?Mexico|NM|North\s?Dakota|ND|South\s?Dakota|SD|West\s?Virginia|WV|DC)\b/g,
     score: 0.4
   },
 
@@ -32,7 +32,7 @@ export const PATTERNS: { type: EntityType; re: RegExp; score: number }[] = [
   // Email – robust + obfuscated "at"/"dot"/"space"
   {
     type: "EMAIL_ADDRESS",
-    re: /(?:[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})|(?:[A-Za-z0-9._%+-]+(?:\s*space\s*)?\s*(?:@|\bat\b)\s*[A-Za-z0-9-]+(?:\s*(?:\.|\bdot\b|\s*space\s*)\s*[A-Za-z0-9-]+)+)/gi,
+    re: /(?:[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})|(?:[A-Za-z0-9._%+-]{3,}(?:\s*space\s*)?\s*(?:@|\bat\b)\s*[A-Za-z0-9-]+(?:\s*(?:\.|\bdot\b|\s*space\s*)\s*[A-Za-z0-9-]+)+)/gi,
     score: 0.97
   },
 
@@ -57,11 +57,11 @@ export const PATTERNS: { type: EntityType; re: RegExp; score: number }[] = [
     score: 0.6
   },
 
-  // SSN context – digits near "ssn"/"social security number"
+  // SSN context – digits near "ssn"/"social security number" (lookbehind so only digits are matched)
   {
     type: "US_SSN",
     re: new RegExp(
-      String.raw`(?:\b(?:ssn|social(?:\s+security)?(?:\s+number)?)\b)[^\d]{0,10}([${DIGIT_CLASS}][${DIGIT_CLASS}\s\-\u2010-\u2015]{5,13}[${DIGIT_CLASS}])`,
+      String.raw`(?<=\b(?:ssn|social(?:\s+security)?(?:\s+number)?)\b[^\d]{0,10})([${DIGIT_CLASS}][${DIGIT_CLASS}\s\-\u2010-\u2015]{5,13}[${DIGIT_CLASS}])`,
       "gi"
     ),
     score: 0.9
@@ -87,10 +87,10 @@ export const PATTERNS: { type: EntityType; re: RegExp; score: number }[] = [
     re: /\b(\d{1,2})(?:st|nd|rd|th)?\s+of\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s*,?\s*((?:19|20)\d{2})\b/gi,
     score: 0.8
   },
-  // "May 5th 2025" / "May 5, 2025"
+  // "May 5th 2025" / "May 5, 2025" / "December 22, 1988"
   {
     type: "DATE_TIME",
-    re: /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?)\s*\d{1,2}(?:st|nd|rd|th)?\s*,?\s*((?:19|20)\d{2})\b/gi,
+    re: /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s*\d{1,2}(?:st|nd|rd|th)?\s*,?\s*((?:19|20)\d{2})\b/gi,
     score: 0.8
   },
   // ISO and d/m/yyyy are already in originals; keep a strict ISO too:
@@ -99,7 +99,7 @@ export const PATTERNS: { type: EntityType; re: RegExp; score: number }[] = [
   // Address (street hints) & ZIP (richer)
   {
     type: "ADDRESS",
-    re: /\b(\d{1,6}\s+[\w .'-]+?\s+(?:Street|St\.|Road|Rd\.|Avenue|Ave\.|Lane|Ln\.|Blvd\.|Drive|Dr\.|Court|Ct\.|Way|Pkwy|Parkway|Terrace|Ter\.))\b[^\n,]*/gi,
+    re: /\b\d{1,6}\s+(?:(?:N(?:orth)?|S(?:outh)?|E(?:ast)?|W(?:est)?|NE|NW|SE|SW)\.?\s+)?(?:[A-Z][\w'-]*\s+){1,5}(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Lane|Ln\.?|Boulevard|Blvd\.?|Drive|Dr\.?|Court|Ct\.?|Way|Parkway|Pkwy\.?|Terrace|Ter\.?|Place|Pl\.?|Circle|Cir\.?|Trail|Trl\.?|Loop|Run|Path|Pike)\b(?:[, ]+(?:(?:Apt|Apartment|Suite|Ste|Unit|Bldg|Building|Floor|Fl|Rm|Room)\.?\s*#?\s*[\w-]+))?/gi,
     score: 0.7
   },
   { type: "POSTAL_CODE", re: /\b\d{5}(?:-\d{4})?\b/g, score: 0.6 },
@@ -128,6 +128,10 @@ export function findMatches(text: string, allow: EntityType[]): EntityMatch[] {
 
   // 2) PERSON heuristics (your request)
   if (allow.includes("PERSON" as EntityType)) {
+    // Words that appear in addresses / locations, NOT names
+    const ADDRESS_WORDS = /^(?:North|South|East|West|Upper|Lower|Old|New|Mount|Fort|Saint|Lake|Hill|Valley|Ridge|Meadow|Brook|Creek|Willow|Oak|Elm|Pine|Maple|Cedar|Spring|Park|Garden|Forest|Grove|Stone|Glen|Dale|Cove|Bay|View|Heights|Falls|Landing|Bend|Mesa|Ranch|Mill|Bridge|Harbor|Shore|Crest|Canyon|Gate|Chase|Center|Estates|Square|Green|Main|Broad|High|Market|Church|School|College|University|Central|National|Federal|Royal|Golden|Silver|Crystal|Sunny|Shadow|Pleasant|Fair|Happy|Liberty|Freedom|Heritage|Pioneer|Frontier|Prairie|Desert|Ocean|River|Mountain|Island|Sunset|Sunrise|Morning|Evening|Autumn|Summer|Winter|Hollow|Woods|Field|Social|Security|Medical|Patient|Primary|General|Local|Public|Private|Insurance|Account|Record|Number|Phone|Mobile|Email|Mailing|Billing|Shipping|Emergency|Contact|Date|Birth|Last|First|Middle|Current|Previous|Next|Good|Dear|Please|Thank|Sorry|Just|Also|Very|Much|Your|Their|This|That|These|Those)$/i;
+    const STREET_TYPES = /^(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Way|Parkway|Pkwy|Terrace|Ter|Place|Pl|Circle|Cir|Trail|Trl|Loop|Run|Path|Pike)$/i;
+
     // Two-word capitalized names (your original heuristic)
     {
       const personRe = /\b([A-Z][a-z]+)\s+([A-Z][a-z]+)\b/g;
@@ -135,6 +139,9 @@ export function findMatches(text: string, allow: EntityType[]): EntityMatch[] {
       while ((m = personRe.exec(text))) {
         const span = m[0];
         if (/^(Dr\.|MD\b)/.test(span)) continue;
+        // Skip if either word looks like an address component
+        if (ADDRESS_WORDS.test(m[1]) || ADDRESS_WORDS.test(m[2])) continue;
+        if (STREET_TYPES.test(m[1]) || STREET_TYPES.test(m[2])) continue;
         out.push({
           type: "PERSON" as EntityType,
           text: span,
